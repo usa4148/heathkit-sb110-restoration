@@ -22,6 +22,7 @@ toc: true
 | SB-110 service bulletin **SB-110-1** (Nov 1969), Heath list (Mar 1998) | The only SB-110 bulletin on record. |
 | Heath list SB-110/110A threads (1997–2012) | Model identification, field symptoms. |
 | SB-100/101/102 and HW-101 bulletins; W5RKL SB-10x guide | **[family]** practice where the manual is silent. |
+| **PS-23 AC Power Supply manual** 595-2314 (©1979), owner-supplied | Supply section checked against it (Rev. 2.1). |
 
 # 2. Transceiver at a glance
 
@@ -66,7 +67,75 @@ toc: true
 
 **Mobile warnings (p. 109).** Vehicle charging voltage must not exceed **14.5 V**. LV B+ from the supply must not exceed **290 V**. Exceeding either shortens component life and causes inoperative VOX and instability. Troubleshooting items 15E and 35E both point here.
 
-There is **no fuse in the transceiver.** Fusing is in the supply (HP-23A) or the HP-13A's in-line fuse holder (Fig. 1-3).
+There is **no fuse in the transceiver.** Fusing is in the supply (HP-23A fuse; PS-23 2.92 A circuit breaker) or the HP-13A's in-line fuse holder (Fig. 1-3).
+
+### 2.2.1 PS-23 supply (checked against the PS-23 manual, 595-2314, ©1979)
+
+The PS-23 is the later (1979) kit supply in the HP-23 family. Page numbers are the PS-23 manual's printed pages.
+
+**How the PS-23 differs from the HP-23/HP-23A:**
+
+- **There is no front-panel B+ switch.** The low-voltage tap is chosen by an internal jumper at assembly: **350 VDC wiring** (Detail 5B, p. 10) or **275 VDC wiring** (Detail 5C, p. 11). On the schematic (illustration booklet p. 4) the brown transformer lead feeds 350 VDC and the brown-yellow lead feeds 275 VDC.
+- **There is no bias control.** The PS-23 gives a fixed **−130 V** with no load (−100 V at 20 mA); bias is set on the transceiver.
+- **A 2.92 A circuit breaker** (65-17) replaces the fuse. Primary current goes through the breaker and through pins 9–10, the AC switch in the equipment (p. 21).
+- A **3-wire grounded line cord** is standard; the green wire goes to chassis lug F (p. 13).
+- The output cable is a captive 8-wire cable with an 11-pin plug. The connector for the far end comes with the equipment (p. 17).
+
+**SB-110A: LV tap.** Needs **+250 V @ 100 mA**, so the PS-23 must have the **275 VDC wiring** (Detail 5C: brown wire from strip C lug 2 to capacitor K lug 4). That matches the SB-110A manual's +250 V instruction (p. 87). A PS-23 previously wired for an HW-101 or SB-102 must be **rewired** to 275 VDC first. The SB-110A mobile limit of ≤ 290 V on LV B+ also implies the low tap. Bias: the PS-23's fixed −130 V (−100 V at 20 mA) covers the SB-110A's −115 V @ 10 mA need, and BIAS ADJ in the transceiver sets 50 mA.
+
+**Specifications (p. 20):**
+
+| Output | No load | Loaded | Duty |
+|---|---|---|---|
+| HV | 820 V | 700 V @ 250 mA (62.5 µF effective; < 1% ripple) | Continuous to 150 mA; 50% at 300 mA |
+| LV high tap (350 VDC wiring) | 350 V | 300 V @ 150 mA (with 100 mA on HV) | Continuous to 175 mA |
+| LV low tap (275 VDC wiring) | 275 V | 250 V @ 100 mA (with 100 mA on HV) | Continuous to 175 mA |
+| Fixed bias | −130 V | −100 V @ 20 mA | — |
+| Filament | — | 12.6 VAC @ 5.5 A | — |
+| Line | 120/240 VAC, 50/60 Hz, 350 W | | |
+
+**Output pinout (schematic; Table 1, p. 17; Detail 7F, p. 14):**
+
+| Pin | Cable wire | Function |
+|---|---|---|
+| 1 | Green | −130 V fixed bias |
+| 2 | Black | Filament common |
+| 3 | Orange | LV +350 V or +275 V (no load) |
+| 4 | Yellow | HV +820 V (no load) |
+| 6 | Red | 12.6 VAC filament |
+| 7 | White | Ground |
+| 9, 10 | Brown, blue | AC switch loop in the equipment. If the equipment has no AC switching, jumper pins 9–10 at the plug and leave brown and blue unconnected (p. 14). |
+| 5, 8, 11 | — | No connection |
+
+**Recap list, with the PS-23 manual's values (parts list p. 3; schematic; circuit description p. 21):**
+
+| Ref | Manual value | Function | Notes |
+|---|---|---|---|
+| C1, C2 | 125 µF 500 V (25-265 can) | HV voltage doubler | Replace both together; field practice is 150 µF 500 V. |
+| C3, C4 | 125 µF 500 V (25-265 can) | LV half-wave doubler; C4 is also the pi-filter input | Same type of can as C1/C2. |
+| C5 | 40 µF 450 V (25-36) | LV pi-filter output (with choke L1, 6 H) | An open C5 causes a CW tone and relay chatter (HW-101-73). |
+| C6, C7 | 40 µF 150 V (25-20) | Bias filter | **Negative supply: the + lead goes to the ground lug** (p. 12). |
+| R1–R4 | 100 kΩ 2 W | HV bleeders / equalizers across C1, C2 | Drift high (field: ~150 kΩ); metal film 2 W. |
+| R5 | 100 kΩ 2 W | LV bleeder | — |
+| R7 | 1000 Ω 2 W | Bias filter series | Chart: no bias → D7, R7 or R8. |
+| R8 | 27 kΩ 1 W | Bias bleeder | Field practice uprates to 2 W. |
+| D1–D7 | 1N2071 (57-27) | D1–D4 HV doubler (two per leg); D5, D6 LV; D7 bias | 1N4007 is the usual replacement. |
+| L1 | 46-56, 6 H | LV filter choke | Chart: no LV → D5/D6, L1. |
+| Breaker | 2.92 A (65-17) | Primary protection | Opens on reset → transformer, rectifier/filter or load short. |
+
+**Initial test (p. 15).** Use a VTVM or VOM; a solid-state ohmmeter won't turn the diodes on.
+
+- Find the meter polarity on R × 1 (about 10 Ω between strip H lugs 3 and 4). Put the correct lead on ground and switch to R × 10k.
+- Socket readings: **pin 1 ≥ 22 kΩ; pins 3 and 4 ≥ 75 kΩ** (they rise slowly as the caps charge); **pin 7 = 0 Ω**; all others infinite.
+
+**Troubleshooting shortcuts (p. 19):**
+
+- **HV only half the normal value** → D1–D4 or C1/C2.
+- **LV only half** → D5/D6.
+- **All outputs half** → primary wired for 240 V on a 120 V line.
+- **Dead** → breaker, the pins 9–10 loop, or the equipment's switch.
+
+**Caution (p. 17).** The outputs are lethal and the large capacitors hold their charge. The manual allows shorting the cap lugs to chassis with a screwdriver blade. A **bleeder stick (resistor to ground)** is gentler on the caps and terminals. Work with one hand, on an insulating surface.
 
 ## 2.3 Tube and semiconductor complement (pp. 124–125, circuit description)
 
@@ -246,8 +315,8 @@ This overrides the paper-strip method used on the SB-10x/HW-101. Relay-related c
 
 ## 4.2 Phase 1: Supply
 
-- Recap and test the HP-23A/HP-23 or HP-13A. **[family]** HP-23: C1–C4 → 150 µF 500 V; C5 → 47 µF 450 V; bias C6/C7 → 47 µF 160 V+; bleeders 100 kΩ 2 W; diodes 1N4007; grounded cord.
-- **Wire the low-voltage section for +250 V** (p. 87).
+- Recap and test the HP-23A/HP-23, PS-23 or HP-13A. The PS-23 values are verified (§2.2.1): C1–C4 125 µF 500 V → 150 µF 500 V; C5 40 µF 450 V → 47 µF 450 V; bias C6/C7 40 µF 150 V → 47 µF 160 V+ (reverse polarity); R1–R5 100 kΩ 2 W; R7 1 kΩ 2 W; R8 27 kΩ 1 W; D1–D7 1N2071 → 1N4007; grounded cord (standard on the PS-23).
+- **Wire the low-voltage section for +250 V** (p. 87). On a PS-23 that means the **275 VDC wiring** (Detail 5C); rewire it if the supply came from an HW-101 or SB-102.
 - Bring it up on a variac with resistive loads.
 - Make up the 8-conductor power cable exactly per Fig. 1-4 (HP-23A) or Fig. 1-3 (HP-13A).
 
@@ -442,6 +511,7 @@ Equipment: an **11 MΩ VTVM**, a **50 Ω non-reactive 100 W dummy load**, and a 
 
 - Heath, *Assembly Manual, 6-Meter SSB Transceiver Model SB-110A*, 595-1145-01 (1966; printed 4-17-70).
 - Heath list (puck.nether.net): SB-110 service bulletins (Mar 1998); "SB110 Question to Owners" (Jun 2003); "SB-110 VFO's" (Apr 2012); "SB-110A Question – 6146Bs" (Feb 2003); SB-110A oscillation (Oct 1997); low drive (Feb 1999).
+- Heath, *Heathkit Manual for the AC Power Supply Model PS-23*, 595-2314 (©1979).
 - **[family]** HW-101/SB-10x service bulletins; W5RKL SB-10x guide; Latta HP-23 restoration.
 
 # 11. Rev. 2 change log (manual review)
@@ -466,5 +536,6 @@ Equipment: an **11 MΩ VTVM**, a **50 Ω non-reactive 100 W dummy load**, and a 
 | Max plate current | — | **250 mA** tune-up limit; MIC/CW just below saturation |
 | Mobile | — | HP-13A bias fully CW; alternator ≤ 14.5 V; LV B+ ≤ 290 V |
 | 6146B | List question | Manual specifies 6146 only; no 6146B guidance |
+| Supply (Rev. 2.1) | HP-23A only, **[family]** recap | Added §2.2.1, checked against the **PS-23 manual**: **275 VDC internal wiring gives +250 V** for the SB-110A (no switch), fixed −130 V bias, 2.92 A breaker, verified recap table, pinout, initial resistance test, troubleshooting. |
 
 **Not readable or not in the manual:** electrolytic voltage ratings (not in the parts lists, and illegible on the scanned schematic); which socket takes the #53 lamp vs. the #47s; the value of R160.
